@@ -352,7 +352,8 @@ describe 'openstack::controller' do
           :enabled           => true,
           :admin_tenant_name => 'services',
           :admin_user        => 'nova',
-          :admin_password    => 'nova_pass'
+          :admin_password    => 'nova_pass',
+          :volume_api_class  => 'nova.volume.cinder.API'
         )
         should contain_class('nova::cert').with(:enabled => true)
         should contain_class('nova::consoleauth').with(:enabled => true)

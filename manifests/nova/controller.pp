@@ -104,12 +104,18 @@ class openstack::nova::controller (
     rabbit_host          => $rabbit_connection,
   }
 
+  if ($cinder) {
+    $volume_api_class = 'nova.volume.cinder.API'
+  } else {
+    $volume_api_class = 'nova.volume.api.API'
+  }
   # Configure nova-api
   class { 'nova::api':
     enabled           => $enabled,
     admin_password    => $nova_user_password,
     auth_host         => $keystone_host,
     enabled_apis      => $enabled_apis, 
+    volume_api_class  => $volume_api_class,
   }
 
 
