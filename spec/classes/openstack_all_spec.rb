@@ -20,6 +20,7 @@ describe 'openstack::all' do
       :nova_user_password    => 'nova_pass',
       :secret_key            => 'secret_key',
       :quantum               => false,
+      :enabled_apis          => 'ec2,osapi_compute,metadata',
     }
   end
 

@@ -63,6 +63,7 @@ class openstack::nova::controller (
   # General
   $keystone_host             = '127.0.0.1',
   $verbose                   = 'False',
+  $enabled_apis              = 'ec2,osapi_compute,metadata',
   $enabled                   = true
 ) {
 
@@ -108,6 +109,7 @@ class openstack::nova::controller (
     enabled           => $enabled,
     admin_password    => $nova_user_password,
     auth_host         => $keystone_host,
+    enabled_apis      => $enabled_apis, 
   }
 
 
