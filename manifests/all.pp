@@ -129,6 +129,7 @@ class openstack::all (
   $vnc_enabled             = true,
   # General
   $enabled                 = true,
+  $enabled_apis            = 'ec2,osapi_compute,metadata',
   $verbose                 = 'False'
 ) {
 
@@ -242,6 +243,7 @@ class openstack::all (
     enabled           => $enabled,
     admin_password    => $nova_user_password,
     auth_host         => 'localhost',
+    enabled_apis      => $enabled_apis,
   }
 
   if $enabled {
