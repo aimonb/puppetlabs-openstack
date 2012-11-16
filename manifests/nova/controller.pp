@@ -115,7 +115,6 @@ class openstack::nova::controller (
     admin_password    => $nova_user_password,
     auth_host         => $keystone_host,
     enabled_apis      => $enabled_apis, 
-    volume_api_class  => $volume_api_class,
   }
 
 
