@@ -60,6 +60,7 @@ class openstack::compute (
   # General
   $migration_support             = false,
   $verbose                       = 'False',
+  $enabled_apis                   = 'ec2,osapi_compute,metadata',
   $enabled                       = true
 ) {
 
@@ -131,7 +132,7 @@ class openstack::compute (
         admin_tenant_name => 'services',
         admin_user        => 'nova',
         admin_password    => $nova_user_password,
-        # TODO override enabled_apis
+        enabled_apis      => $enabled_apis, 
       }
     } else {
       $enable_network_service = false

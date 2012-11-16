@@ -138,6 +138,7 @@ class openstack::controller (
   $quantum                 = false,
   $quantum_db_user         = 'quantum',
   $quantum_db_dbname       = 'quantum',
+  $enabled_apis            = 'ec2,osapi_compute,osapi_volume,metadata',
   $enabled                 = true
 ) {
 
@@ -279,6 +280,7 @@ class openstack::controller (
     # General
     verbose                 => $verbose,
     enabled                 => $enabled,
+    enabled_apis            => $enabled_apis,
   }
 
   ######### Cinder Controller Services ########

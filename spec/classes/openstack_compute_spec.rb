@@ -13,6 +13,7 @@ describe 'openstack::compute' do
       :cinder_sql_connection => 'mysql://user:pass@host/dbname/',
       :quantum               => false,
       :fixed_range           => '10.0.0.0/16',
+      :enabled_apis          => 'ec2,osapi_compute,metadata',
     }
   end
 
