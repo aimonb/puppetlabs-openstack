@@ -139,7 +139,8 @@ class openstack::controller (
   $quantum_db_user         = 'quantum',
   $quantum_db_dbname       = 'quantum',
   $enabled_apis            = 'ec2,osapi_compute,osapi_volume,metadata',
-  $enabled                 = true
+  $enabled                 = true,
+  $service_down_time       = 60,
 ) {
 
   if $internal_address {
@@ -281,6 +282,7 @@ class openstack::controller (
     verbose                 => $verbose,
     enabled                 => $enabled,
     enabled_apis            => $enabled_apis,
+    service_down_time       => $service_down_time,
   }
 
   ######### Cinder Controller Services ########

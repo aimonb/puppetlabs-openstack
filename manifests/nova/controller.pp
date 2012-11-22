@@ -64,7 +64,8 @@ class openstack::nova::controller (
   $keystone_host             = '127.0.0.1',
   $verbose                   = 'False',
   $enabled_apis              = 'ec2,osapi_compute,metadata',
-  $enabled                   = true
+  $enabled                   = true,
+  $service_down_time         = 60,
 ) {
 
   # Configure the db string
@@ -102,6 +103,7 @@ class openstack::nova::controller (
     glance_api_servers   => $glance_connection,
     verbose              => $verbose,
     rabbit_host          => $rabbit_connection,
+    service_down_time    => $service_down_time,
   }
 
   if ($cinder) {

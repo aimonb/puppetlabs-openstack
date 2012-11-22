@@ -21,6 +21,7 @@ describe 'openstack::all' do
       :secret_key            => 'secret_key',
       :quantum               => false,
       :enabled_apis          => 'ec2,osapi_compute,metadata',
+      :service_down_time     => '60'
     }
   end
 

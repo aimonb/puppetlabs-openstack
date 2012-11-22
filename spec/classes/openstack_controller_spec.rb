@@ -22,6 +22,7 @@ describe 'openstack::controller' do
       :secret_key            => 'secret_key',
       :quantum               => false,
       :enabled_apis          => 'ec2,osapi_compute,metadata',
+      :service_down_time     => 60
     }
   end
 
@@ -346,7 +347,8 @@ describe 'openstack::controller' do
           :rabbit_virtual_host => '/',
           :image_service       => 'nova.image.glance.GlanceImageService',
           :glance_api_servers  => '10.0.0.1:9292',
-          :verbose             => 'False'
+          :verbose             => 'False',
+          :service_down_time   => '60'
         )
         should contain_class('nova::api').with(
           :enabled           => true,
