@@ -130,7 +130,8 @@ class openstack::all (
   # General
   $enabled                 = true,
   $enabled_apis            = 'ec2,osapi_compute,metadata',
-  $verbose                 = 'False'
+  $verbose                 = 'False',
+  $service_down_time       = 60,
 ) {
 
   # Ensure things are run in order
@@ -236,6 +237,7 @@ class openstack::all (
     glance_api_servers => 'localhost:9292',
     verbose            => $verbose,
     rabbit_host        => '127.0.0.1',
+    service_down_time  => $service_down_time,
   }
 
   # Configure nova-api
