@@ -46,6 +46,8 @@
 # [enabled] Whether services should be enabled. This parameter can be used to
 #   implement services in active-passive modes for HA. Optional. Defaults to true.
 class openstack::nova_common(
+  $compute,
+  $controller,
   # Network Required
   $public_address,
   # Database Required
@@ -97,7 +99,7 @@ class openstack::nova_common(
   $quantum_user_password         = 'quantum',
   $quantum_db_password           = 'quantum',
   # Keystone
-  $keystone_host                 = false,
+  $keystone_host                 = '127.0.0.1',
   $keystone_db_password          = 'keystone',
   # Cinder
   $cinder_user_password          = 'cinder',
@@ -105,8 +107,6 @@ class openstack::nova_common(
   # Nova
   $purge_nova_config             = true,
   $api                           = true,
-  $compute                       = false,
-  $controller                    = true,
   ){
 
   ######## BEGIN NOVA ###########
@@ -186,7 +186,7 @@ class openstack::nova_common(
   # Configure Nova
   class { 'nova':
     sql_connection      => $sql_connection,
-    rabbit_userid       => $rabbit_user,
+    rabbit_userid       => $rabbit_userid,
     rabbit_password     => $rabbit_password,
     image_service       => $image_service,
     glance_api_servers  => $glance_api_servers,
