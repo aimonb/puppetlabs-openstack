@@ -166,16 +166,16 @@ class openstack::nova_common(
       allowed_hosts          => $allowed_hosts,
       enabled                => $enabled,
     }
+    if $enabled {
+      $really_create_networks = $create_networks
+    } else {
+      $really_create_networks = false
+    }
   }
   if ($glance_api_servers == undef) {
     $real_glance_api_servers = "${public_address}:9292"
   } else {
     $real_glance_api_servers = $glance_api_servers
-  }
-  if $enabled {
-    $really_create_networks = $create_networks
-  } else {
-    $really_create_networks = false
   }
 
   $sql_connection    = $nova_db
@@ -255,7 +255,7 @@ class openstack::nova_common(
       floating_range    => $floating_range,
       network_manager   => $network_manager,
       config_overrides  => $network_config,
-      create_networks   => $controller,
+      create_networks   => $really_create_networks,
       num_networks      => $num_networks,
       enabled           => $enable_network_service,
       install_service   => $enable_network_service,
