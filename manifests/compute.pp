@@ -22,22 +22,13 @@ class openstack::compute (
   $nova_user_password,
   # Required Rabbit
   $rabbit_password,
-  # DB
-  $sql_connection,
   # Quantum
   $quantum                       = false,
-  $quantum_sql_connection        = false,
-  $quantum_host                  = false,
   $quantum_user_password         = false,
-  $keystone_host                 = false,
-  # Nova
-  $purge_nova_config             = true,
   # Rabbit
   $rabbit_host                   = '127.0.0.1',
   $rabbit_user                   = 'nova',
   $rabbit_virtual_host           = '/',
-  # Glance
-  $glance_api_servers            = false,
   # Virtualization
   $libvirt_type                  = 'kvm',
   # VNC
@@ -47,9 +38,8 @@ class openstack::compute (
   # cinder / volumes
   $cinder                        = true,
   $cinder_sql_connection         = undef,
-  $manage_volumes                = true,
   $nova_volume                   = 'cinder-volumes',
-  $iscsi_ip_address              = '127.0.0.1',
+  $iscsi_ip_address              = false,
   # General
   $migration_support             = false,
   $verbose                       = 'False',
@@ -62,18 +52,8 @@ class openstack::compute (
   } else {
     $vncserver_listen_real = $internal_address
   }
-
-
-  #
-  # indicates that all nova config entries that we did
-  # not specifify in Puppet should be purged from file
-  #
-  if ! defined( Resources[nova_config] ) {
-    if ($purge_nova_config) {
-      resources { 'nova_config':
-        purge => true,
-      }
-    }
+  if ! $iscsi_ip_address {
+    $iscsi_ip_address_real=$internal_address
   }
 
   # Install / configure nova-compute
@@ -98,17 +78,8 @@ class openstack::compute (
       include keystone::python
     }
   } else {
-    if ! $quantum_sql_connection {
-      fail('quantum sql connection must be specified when quantum is installed on compute instances')
-    }
-    if ! $quantum_host {
-      fail('quantum host must be specified when quantum is installed on compute instances')
-    }
     if ! $quantum_user_password {
       fail('quantum user password must be set when quantum is configured')
-    }
-    if ! $keystone_host {
-      fail('keystone host must be configured when quantum is installed')
     }
 
 
@@ -133,7 +104,7 @@ class openstack::compute (
     }
     class { 'cinder::volume': }
     class { 'cinder::volume::iscsi':
-      iscsi_ip_address => $internal_address,
+      iscsi_ip_address => $iscsi_ip_address_real,
       volume_group     => $nova_volume,
     }
 

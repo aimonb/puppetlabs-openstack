@@ -94,12 +94,19 @@ class openstack::nova_common(
   $quantum                       = false,
   $quantum_sql_connection        = false,
   $quantum_host                  = false,
-  $quantum_user_password         = false,
+  $quantum_user_password         = 'quantum',
+  $quantum_db_password           = 'quantum',
+  # Keystone
   $keystone_host                 = false,
+  $keystone_db_password          = 'keystone',
+  # Cinder
+  $cinder_user_password          = 'cinder',
+  $cinder_db_password            = 'cinder',
   # Nova
   $purge_nova_config             = true,
   $api                           = true,
   $compute                       = false,
+  $controller                    = true,
   ){
 
   ######## BEGIN NOVA ###########
@@ -129,7 +136,7 @@ class openstack::nova_common(
     }
   }
   # Ordering
-  if ! $compute {
+  if $controller {
     Class[$os_db_class] -> Class['nova']
     Class[$os_db_class] -> Class['nova::api']
     Class[$os_db_class] -> Class['nova::network']
@@ -248,7 +255,7 @@ class openstack::nova_common(
       floating_range    => $floating_range,
       network_manager   => $network_manager,
       config_overrides  => $network_config,
-      create_networks   => $really_create_networks,
+      create_networks   => $controller,
       num_networks      => $num_networks,
       enabled           => $enable_network_service,
       install_service   => $enable_network_service,
