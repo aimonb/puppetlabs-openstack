@@ -3,48 +3,44 @@
 #
 # === Parameters
 #
-# [public_interface] Public interface used to route public traffic. Required.
-# [public_address] Public address for public endpoints. Required.
-# [private_interface] Interface used for vm networking connectivity. Required.
-# [internal_address] Internal address used for management. Required.
-# [mysql_root_password] Root password for mysql server.
-# [admin_email] Admin email.
-# [admin_password] Admin password.
-# [keystone_db_password] Keystone database password.
-# [keystone_admin_token] Admin token for keystone.
-# [glance_db_password] Glance DB password.
-# [glance_user_password] Glance service user password.
-# [nova_db_password] Nova DB password.
-# [nova_user_password] Nova service password.
-# [rabbit_password] Rabbit password.
-# [rabbit_user] Rabbit User.
-# [rabbit_virtual_host] Rabbit virtual host path for Nova. Defaults to '/'.
-# [network_manager] Nova network manager to use.
-# [fixed_range] Range of ipv4 network for vms.
-# [floating_range] Floating ip range to create.
-# [create_networks] Rather network and floating ips should be created.
-# [num_networks] Number of networks that fixed range should be split into.
-# [multi_host] Rather node should support multi-host networking mode for HA.
-#   Optional. Defaults to false.
-# [auto_assign_floating_ip] Rather configured to automatically allocate and
-#   assign a floating IP address to virtual instances when they are launched.
-#   Defaults to false.
-# [network_config] Hash that can be used to pass implementation specifc
-#   network settings. Optioal. Defaults to {}
-# [verbose] Whether to log services at verbose.
-# Horizon related config - assumes puppetlabs-horizon code
-# [secret_key]          secret key to encode cookies, …
-# [cache_server_ip]     local memcached instance ip
-# [cache_server_port]   local memcached instance port
-# [horizon]             (bool) is horizon installed. Defaults to: true
-# [swift]               (bool) is swift installed
-# [quantum]             (bool) is quantum installed
+# [compute]                 (bool) Is Compute?
+# [controller]              (bool) Is Controller?
+# [public_interface]        (string) Public interface used to route public traffic. Required.
+# [public_address]          (string) Public address for public endpoints. Required.
+# [private_interface]       (string) Interface used for vm networking connectivity. Required.
+# [internal_address]        (string) Internal address used for management. Required.
+# [mysql_root_password]     (string) Root password for mysql server.
+# [admin_email]             (string) Admin email.
+# [admin_password]          (string) Admin password.
+# [keystone_db_password]    (string) Keystone database password.
+# [keystone_admin_token]    (string) Admin token for keystone.
+# [glance_db_password]      (string) Glance DB password.
+# [glance_user_password]    (string) Glance service user password.
+# [nova_db_password]        (string) Nova DB password.
+# [nova_user_password]      (string) Nova service password.
+# [rabbit_password]         (string) Rabbit password.
+# [rabbit_user]             (string) Rabbit User.
+# [rabbit_virtual_host]     (string) Rabbit virtual host path for Nova. Defaults to '/'.
+# [network_manager]         (string) Nova network manager to use.
+# [fixed_range]             (string) Range of ipv4 network for vms.
+# [floating_range]          (string) Floating ip range to create.
+# [create_networks]         (bool) Create network and floating ips.
+# [num_networks]            (integer) Number of networks that fixed range should be split into.
+# [multi_host]              (bool) Support multi-host networking mode.
+# [auto_assign_floating_ip] (bool) Automatically allocate and assign a floating IP address to virtual instances when they are launched.
+# [network_config]          (hash) Hash that can be used to pass implementation specifc network settings.
+# [verbose]                 (bool) Enable verbose logging.
+# [horizon]                 (bool) Install Horizon.
+# [secret_key]              (string) Secret key to encode cookies for Horizon.
+# [cache_server_ip]         (string) Local memcached instance ip for Horizon
+# [cache_server_port]       (string )local memcached instance port for Horizon
+# [swift]                   (bool) Install Swift
+# [quantum]                 (bool) Install Quantum
 #   The next is an array of arrays, that can be used to add call-out links to the dashboard for other apps.
 #   There is no specific requirement for these apps to be for monitoring, that's just the defacto purpose.
 #   Each app is defined in two parts, the display name, and the URI
-# [horizon_app_links]     array as in '[ ["Nagios","http://nagios_addr:port/path"],["Ganglia","http://ganglia_addr"] ]'
-# [enabled] Whether services should be enabled. This parameter can be used to
-#   implement services in active-passive modes for HA. Optional. Defaults to true.
+# [horizon_app_links]       (array) as in '[ ["Nagios","http://nagios_addr:port/path"],["Ganglia","http://ganglia_addr"] ]'
+# [enabled]                 (bool) Whether services should be enabled. This parameter can be used to implement services in active-passive modes for HA. Set to false if you do not want services to auto start
 class openstack::nova_common(
   $compute,
   $controller,
