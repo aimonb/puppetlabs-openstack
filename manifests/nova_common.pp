@@ -167,7 +167,7 @@ class openstack::nova_common(
       allowed_hosts          => $allowed_hosts,
       enabled                => $enabled,
     }
-    if $enabled {
+    if $controller and $enabled {
       $really_create_networks = $create_networks
     } else {
       $really_create_networks = false

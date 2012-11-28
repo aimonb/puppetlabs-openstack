@@ -35,6 +35,7 @@ class openstack::compute (
   $vnc_enabled                   = true,
   $vncproxy_host                 = undef,
   $vncserver_listen              = false,
+  $novncproxy_base_url           = 'http://127.0.0.1:6080/vnc_auto.html',
   # cinder / volumes
   $cinder                        = true,
   $cinder_sql_connection         = undef,
@@ -62,6 +63,7 @@ class openstack::compute (
     vnc_enabled                   => $vnc_enabled,
     vncserver_proxyclient_address => $internal_address,
     vncproxy_host                 => $vncproxy_host,
+    novncproxy_base_url           => $novncproxy_base_url,
   }
 
   # Configure libvirt for nova-compute
