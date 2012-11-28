@@ -41,6 +41,64 @@
 #   Each app is defined in two parts, the display name, and the URI
 # [horizon_app_links]       (array) as in '[ ["Nagios","http://nagios_addr:port/path"],["Ganglia","http://ganglia_addr"] ]'
 # [enabled]                 (bool) Whether services should be enabled. This parameter can be used to implement services in active-passive modes for HA. Set to false if you do not want services to auto start
+#
+# === Examples
+#
+# This example is a real implemntation example heavily using custom facts to control the class.
+# Traits of this exaple:
+# - No Quantum or Cinder
+# - Uses nova-volume
+# - Flat MultiHost networking
+# - Shared RabbitMQ server with custom vhost (all work is done for you..just specify it and puppet will take care of rest.. It is then safe for other apps on other vhosts)
+# - Uses a Single /16 network for VM IPs ($::fixed_range=n.n.0.0/16)
+# - Note that some options are specified with their default args.. This is unecessary but we like it for explicitness.
+#
+#  class { 'openstack::nova_common':
+#    controller                => str2bool($::is_controller),
+#    compute                   => str2bool($::is_compute),
+#    public_address            => $::ext_ip,
+#    internal_address          => $::int_ip,
+#    db_host                   => $::controller_ip,
+#    rabbit_userid             => $::nova_rabbit_user,
+#    rabbit_password           => $::nova_rabbit_password,
+#    rabbit_host               => $::controller_ip,
+#    rabbit_virtual_host       => '/nova',
+#    nova_user_password        => $::keystone_admin_password,
+#    nova_db_dbname            => $::nova_db_name,
+#    nova_db_user              => $::nova_db_user,
+#    nova_db_password          => $::nova_db_pass,
+#    db_type                   => 'mysql',
+#    image_service             => 'nova.image.glance.GlanceImageService',
+#    glance_api_servers        => "${::controller_ip}:9292",
+#    verbose                   => $::verbose,
+#    cinder                    => false,
+#    service_down_time         => 120,
+#    enabled_apis              => 'ec2,osapi_compute,osapi_volume,metadata',
+#    enabled                   => true,
+#    # Network
+#    public_interface          => $::ext_eth,
+#    private_interface         => $::int_eth,
+#    fixed_range               => $::fixed_range,
+#    network_manager           => 'nova.network.manager.FlatDHCPManager',
+#    network_config            => {},
+#    multi_host                => true,
+#    create_networks           => true,
+#    network_size              =>  65535,
+#    num_networks              =>  1,
+#    floating_range            =>  $::float_range,
+#    # Quantum
+#    quantum                   => false,
+#    quantum_sql_connection    => false,
+#    quantum_host              => false,
+#    quantum_user_password     => false,
+#    # Keystone
+#    keystone_host             => $::controller_ip,
+#    # Nova
+#    purge_nova_config         => true,
+#    api                       => true,
+#  }
+#
+##############
 class openstack::nova_common(
   $compute,
   $controller,
