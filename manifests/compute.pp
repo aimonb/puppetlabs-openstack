@@ -5,7 +5,36 @@
 #
 # === Parameters
 #
-# See params.pp
+## Required Network
+# [internal_address]        (StrOpt) Interal IP address
+## Required Nova
+# [nova_user_password]      (StrOpt) Nova user password
+## Required Rabbit
+# [rabbit_password]         (StrOpt) Rabbit user password
+## Quantum
+# [quantum]                 (BoolOpt) Enable Quantum
+# [quantum_user_password]   (StrOpt) Quantum user password
+## Rabbit
+# [rabbit_host]             (StrOpt) RabbitMQ server listen address
+# [rabbit_user]             (StrOpt) User to connect to RabbitMQ as
+# [rabbit_virtual_host]     (StrOpt) VirtualHost to use for Nova queue (set to non default if you are sharing RabbitMQ with other services)
+## Virtualization
+# [libvirt_type]            (StrOpt) Libvirt domain type (valid options are: kvm, lxc, qemu, uml, xen)
+## VNC
+# [vnc]                     (BoolOpt) Enable VNC
+# [vncproxy_host]           (StrOpt) VNC Proxy Listen address
+# [vncserver_listen]        (StrOpt) VNC Server listen address (This must be '0.0.0.0' if migration_support=true)
+# [novncproxy_base_url]     (StrOpt) location of VNC console proxy, in the form "http://www.example.com:6080/vnc_auto.html"
+## Cinder / Volumes
+# [cinder]                  (BoolOpt) Enable Cinder
+# [cinder_sql_connection]   (StrOpt) SQLAlchemy connection string for Cinder
+# [nova_volume]             (StrOpt) Nova Volume Group to be used by Cinder 
+# [iscsi_ip_address]        (StrOpt) IP Address of ISCSI Server (typically internal address)
+## General
+# [enabled_apis]            (ListOpt) a list of APIs to enable by default
+# [migration_support]       (BoolOpt) Support Live Migration
+# [verbose]                 (BoolOpt) Verbose logging
+# [enabled]                 (BoolOpt) Enable Compute
 #
 # === Examples
 #
@@ -32,19 +61,19 @@ class openstack::compute (
   # Virtualization
   $libvirt_type                  = 'kvm',
   # VNC
-  $vnc_enabled                   = true,
+  $vnc                           = true,
   $vncproxy_host                 = undef,
   $vncserver_listen              = false,
   $novncproxy_base_url           = 'http://127.0.0.1:6080/vnc_auto.html',
-  # cinder / volumes
+  # Cinder / Volumes
   $cinder                        = true,
   $cinder_sql_connection         = undef,
   $nova_volume                   = 'cinder-volumes',
   $iscsi_ip_address              = false,
   # General
+  $enabled_apis                   = 'ec2,osapi_compute,metadata',
   $migration_support             = false,
   $verbose                       = 'False',
-  $enabled_apis                   = 'ec2,osapi_compute,metadata',
   $enabled                       = true
 ) {
 
