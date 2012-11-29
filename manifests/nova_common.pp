@@ -268,6 +268,7 @@ class openstack::nova_common(
       auth_host         => $keystone_host,
       enabled_apis      => $enabled_apis, 
       volume_api_class  => $volume_api_class,
+      sync_db           => $controller,
     }
   } 
   # Networking
