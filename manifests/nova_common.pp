@@ -45,6 +45,9 @@
 # === Examples
 #
 # This example is a real implemntation example heavily using custom facts to control the class.
+#
+# Note that this class needs to be called for both controllers and computes.
+#
 # Traits of this exaple:
 # - No Quantum or Cinder
 # - Uses nova-volume
@@ -221,11 +224,11 @@ class openstack::nova_common(
       allowed_hosts          => $allowed_hosts,
       enabled                => $enabled,
     }
-    if $controller and $enabled {
-      $really_create_networks = $create_networks
-    } else {
-      $really_create_networks = false
-    }
+  }
+  if $controller and $enabled {
+    $really_create_networks = $create_networks
+  } else {
+    $really_create_networks = false
   }
   if ($glance_api_servers == undef) {
     $real_glance_api_servers = "${public_address}:9292"
