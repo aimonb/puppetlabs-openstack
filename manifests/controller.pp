@@ -193,7 +193,7 @@ class openstack::controller (
     class { 'cinder::scheduler': }
   } else {
     # Set up nova-volume
-    class{ 'nova::volume': }
+    class{ 'nova::volume': enabled =>  true}
   }
 
   ######## Horizon ########
