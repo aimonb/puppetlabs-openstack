@@ -106,7 +106,7 @@ class openstack::controller (
   $cinder_db_dbname        = 'cinder',
   # quantum
   $quantum                 = false,
-  $enabled                 = true,
+  $enabled                 = true
 ) {
 
   if $internal_address {
