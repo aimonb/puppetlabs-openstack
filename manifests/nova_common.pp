@@ -165,6 +165,8 @@ class openstack::nova_common(
   # Nova
   $purge_nova_config             = true,
   $api                           = true,
+  #Glance
+  $glance_db_password            = 'glance'
   ){
 
   ######## BEGIN NOVA ###########
@@ -198,7 +200,6 @@ class openstack::nova_common(
     Class[$os_db_class] -> Class['nova']
     Class[$os_db_class] -> Class['nova::api']
     Class[$os_db_class] -> Class['nova::network']
-    Class["glance::${db_class}"] -> Class['glance::registry']
     
     class { $os_db_class:
       mysql_root_password    => $mysql_root_password,
@@ -218,9 +219,8 @@ class openstack::nova_common(
       cinder_db_password     => $cinder_db_password,
       cinder_db_dbname       => $cinder_db_dbname,
       quantum                => $quantum,
-      quantum_db_user        => $quantum_db_user,
-      quantum_db_password    => $quantum_db_password,
       quantum_db_dbname      => $quantum_db_dbname,
+      quantum_db_password    => $quantum_db_password,
       allowed_hosts          => $allowed_hosts,
       enabled                => $enabled,
     }
@@ -276,7 +276,7 @@ class openstack::nova_common(
     nova_config { 'auto_assign_floating_ip': value => 'True' }
   }
   
-  # Nova Netwo rk
+  # Nova Network
   if ! $quantum {
 
     if ! $fixed_range {
@@ -297,10 +297,10 @@ class openstack::nova_common(
         $enable_network_service = false
       }
     } else {
-      if $compute {
-        $enable_network_service = false
-      } else {
+      if $controller {
         $enable_network_service = true
+      } else {
+        $enable_network_service = false
       }
       nova_config {
         'multi_host':      value => 'False';

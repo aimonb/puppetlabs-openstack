@@ -17,12 +17,9 @@ describe 'openstack::controller' do
       :keystone_admin_token  => 'keystone_admin_token',
       :glance_db_password    => 'glance_pass',
       :glance_user_password  => 'glance_pass',
-      :nova_db_password      => 'nova_pass',
       :nova_user_password    => 'nova_pass',
       :secret_key            => 'secret_key',
-      :quantum               => false,
-      :enabled_apis          => 'ec2,osapi_compute,metadata',
-      :service_down_time     => 60
+      :quantum               => false
     }
   end
 
@@ -40,123 +37,8 @@ describe 'openstack::controller' do
     default_params
   end
 
-  context 'database' do
-
-    context 'with unsupported db type' do
-
-      let :params do
-        default_params.merge({:db_type => 'sqlite'})
-      end
-
-      it do
-        expect { subject }.to raise_error(Puppet::Error)
-      end
-
-    end
-
-    context 'with default mysql params' do
-
-      let :params do
-        default_params.merge(
-          :enabled => true,
-          :db_type => 'mysql',
-          :quantum => true,
-          :cinder  => true
-        )
-      end
-
-      it 'should configure mysql server' do
-        param_value(subject, 'class', 'mysql::server', 'enabled').should be_true
-        config_hash = param_value(subject, 'class', 'mysql::server', 'config_hash')
-        config_hash['bind_address'].should == '0.0.0.0'
-        config_hash['root_password'].should == 'sql_pass'
-      end
-
-      it 'should contain openstack db config' do
-         should contain_class('keystone::db::mysql').with(
-           :user          => 'keystone',
-           :password      => 'keystone_pass',
-           :dbname        => 'keystone',
-           :allowed_hosts => '%'
-         )
-         should contain_class('glance::db::mysql').with(
-           :user          => 'glance',
-           :password      => 'glance_pass',
-           :dbname        => 'glance',
-           :allowed_hosts => '%'
-         )
-         should contain_class('nova::db::mysql').with(
-           :user          => 'nova',
-           :password      => 'nova_pass',
-           :dbname        => 'nova',
-           :allowed_hosts => '%'
-         )
-         should contain_class('cinder::db::mysql').with(
-           :user          => 'cinder',
-           :password      => 'cinder_pass',
-           :dbname        => 'cinder',
-           :allowed_hosts => '%'
-         )
-         should contain_class('quantum::db::mysql').with(
-           :user          => 'quantum',
-           :password      => 'quantum_pass',
-           :dbname        => 'quantum',
-           :allowed_hosts => '%'
-         )
-      end
 
 
-      it { should contain_class('mysql::server::account_security')}
-
-    end
-
-    context 'when cinder and quantum are false' do
-
-      let :params do
-        default_params.merge(
-          :quantum => false,
-          :cinder  => false
-        )
-      end
-      it do
-        should contain_class('nova::volume')
-        should_not contain_class('quantum::db::mysql')
-        should_not contain_class('cinder::db::mysql')
-      end
-
-    end
-
-    context 'when not enabled' do
-
-      let :params do
-        default_params.merge(
-          {:enabled => false}
-        )
-      end
-
-      it 'should configure mysql server' do
-        param_value(subject, 'class', 'mysql::server', 'enabled').should be_false
-        config_hash = param_value(subject, 'class', 'mysql::server', 'config_hash')
-        config_hash['bind_address'].should == '0.0.0.0'
-        config_hash['root_password'].should == 'sql_pass'
-      end
-
-      ['keystone', 'nova', 'glance', 'cinder', 'quantum'].each do |x|
-        it { should_not contain_class("#{x}::db::mysql") }
-      end
-    end
-
-    context 'when account secutiry is not enabled' do
-      let :params do
-        default_params.merge(
-          {:mysql_account_security => false}
-        )
-      end
-
-      it { should_not contain_class('mysql::server::account_security')}
-    end
-
-  end
 
   context 'keystone' do
 

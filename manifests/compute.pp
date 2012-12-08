@@ -31,7 +31,6 @@
 # [nova_volume]             (StrOpt) Nova Volume Group to be used by Cinder 
 # [iscsi_ip_address]        (StrOpt) IP Address of ISCSI Server (typically internal address)
 ## General
-# [enabled_apis]            (ListOpt) a list of APIs to enable by default
 # [migration_support]       (BoolOpt) Support Live Migration
 # [verbose]                 (BoolOpt) Verbose logging
 # [enabled]                 (BoolOpt) Enable Compute
@@ -61,22 +60,21 @@ class openstack::compute (
   # Virtualization
   $libvirt_type                  = 'kvm',
   # VNC
-  $vnc                           = true,
-  $vncproxy_host                 = undef,
+  $vnc_enabled                   = true,
+  $vncproxy_host                 = false,
   $vncserver_listen              = false,
   $novncproxy_base_url           = 'http://127.0.0.1:6080/vnc_auto.html',
   # Cinder / Volumes
   $cinder                        = true,
-  $cinder_sql_connection         = undef,
+  $cinder_sql_connection         = false,
   $nova_volume                   = 'cinder-volumes',
   $iscsi_ip_address              = false,
   # General
-  $enabled_apis                   = 'ec2,osapi_compute,metadata',
   $migration_support             = false,
   $verbose                       = 'False',
   $enabled                       = true
 ) {
-
+  include ::nova
   if $vncserver_listen {
     $vncserver_listen_real = $vncserver_listen
   } else {
