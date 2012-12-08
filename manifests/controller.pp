@@ -17,7 +17,6 @@
 # [rabbit_password] Rabbit password.
 # [rabbit_user] Rabbit User.
 # [rabbit_virtual_host] Rabbit virtual host path for Nova. Defaults to '/'.
-# [auto_assign_floating_ip] Rather configured to automatically allocate and
 #   assign a floating IP address to virtual instances when they are launched.
 #   Defaults to false.
 # [network_config] Hash that can be used to pass implementation specifc

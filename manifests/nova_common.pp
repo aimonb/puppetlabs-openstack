@@ -107,6 +107,7 @@ class openstack::nova_common(
   $controller,
   # Network Required
   $public_address,
+  $internal_address,
   # Database Required
   $db_host,
   # Rabbit Required
@@ -125,7 +126,6 @@ class openstack::nova_common(
   $rabbit_host               = '127.0.0.1',
   $rabbit_virtual_host       = '/',
   $cinder                    = true,
-  $internal_address          = $public_address,
   $service_down_time         = 60,
   $enabled_apis              = 'ec2,osapi_compute,metadata',
   $enabled                   = true,
@@ -139,7 +139,6 @@ class openstack::nova_common(
   # Network
   $public_interface              = undef,
   $private_interface             = undef,
-  $internal_address        = false,
   $admin_address           = false,
   $network_manager         = 'nova.network.manager.FlatDHCPManager',
   $fixed_range             = '10.0.0.0/24',
@@ -155,20 +154,19 @@ class openstack::nova_common(
   $quantum_sql_connection        = false,
   $quantum_host                  = false,
   $quantum_user_password         = 'quantum',
-  $quantum_db_password           = 'quantum',
+  $quantum_db_password           = 'quantum_pass',
   # Keystone
   $keystone_host                 = '127.0.0.1',
-  $keystone_db_password          = 'keystone',
+  $keystone_db_password          = 'keystone_pass',
   # Cinder
   $cinder_user_password          = 'cinder',
-  $cinder_db_password            = 'cinder',
+  $cinder_db_password            = 'cinder_pass',
   # Nova
   $purge_nova_config             = true,
   $api                           = true,
   #Glance
-  $glance_db_password            = 'glance'
+  $glance_db_password            = 'glance_pass'
   ){
-
   ######## BEGIN NOVA ###########
   #
   # indicates that all nova config entries that we did
@@ -197,9 +195,6 @@ class openstack::nova_common(
   }
   # Ordering
   if $controller {
-    Class[$os_db_class] -> Class['nova']
-    Class[$os_db_class] -> Class['nova::api']
-    Class[$os_db_class] -> Class['nova::network']
     
     class { $os_db_class:
       mysql_root_password    => $mysql_root_password,
@@ -222,7 +217,7 @@ class openstack::nova_common(
       quantum_db_dbname      => $quantum_db_dbname,
       quantum_db_password    => $quantum_db_password,
       allowed_hosts          => $allowed_hosts,
-      enabled                => $enabled,
+      enabled                => true,
     }
   }
   if $controller and $enabled {
@@ -252,6 +247,7 @@ class openstack::nova_common(
     rabbit_host         => $rabbit_host,
     rabbit_virtual_host => $rabbit_virtual_host,
     service_down_time   => $service_down_time,
+    require             => Class[$os_db_class]
   } 
   if $cinder {
     $volume_api_class = 'nova.volume.cinder.API'
@@ -269,6 +265,7 @@ class openstack::nova_common(
       enabled_apis      => $enabled_apis, 
       volume_api_class  => $volume_api_class,
       sync_db           => $controller,
+      require           => Class[$os_db_class]
     }
   } 
   # Networking
@@ -319,21 +316,26 @@ class openstack::nova_common(
       network_size      => $network_size,
       enabled           => $enable_network_service,
       install_service   => $enable_network_service,
+      require           => Class[$os_db_class]
     }
   # Quantum
   } else {
-    $quantum_sql_connection = "mysql://${quantum_db_user}:${quantum_db_password}@${db_host}/${quantum_db_dbname}?charset=utf8"
+    if $quantum_sql_connection {
+      $real_quantum_sql_connection = $quantum_sql_connection
+    } else {
+      $real_quantum_sql_connection = "mysql://${quantum_db_user}:${quantum_db_password}@${db_host}/${quantum_db_dbname}?charset=utf8"
+    }
     class { 'quantum':
       verbose         => $verbose,
       debug           => $verbose,
       rabbit_host     => $rabbit_host,
       rabbit_user     => $rabbit_user,
       rabbit_password => $rabbit_password,
-      #sql_connection  => $quantum_sql_connection,
+      #sql_connection  => $real_quantum_sql_connection,
     }
     
     class { 'quantum::plugins::ovs':
-      sql_connection      => $quantum_sql_connection,
+      sql_connection      => $real_quantum_sql_connection,
       tenant_network_type => 'gre',
       enable_tunneling    => true,
     }

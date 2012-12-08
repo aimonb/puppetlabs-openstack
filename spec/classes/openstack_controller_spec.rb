@@ -247,12 +247,6 @@ describe 'openstack::controller' do
       end
       it { should_not contain_nova_config('auto_assign_floating_ip') }
     end
-    context 'when auto assign floating ip is assigned' do
-      let :params do
-        default_params.merge(:auto_assign_floating_ip => 'true')
-      end
-      it { should contain_nova_config('auto_assign_floating_ip').with(:value => 'True')}
-    end
     context 'when not enabled' do
       let :params do
         default_params.merge(:enabled => false)
@@ -344,51 +338,4 @@ describe 'openstack::controller' do
 
   end
 
-  context 'network config' do
-
-    context 'when quantum' do
-
-      let :params do
-        default_params.merge(:quantum => true)
-      end
-
-      it { should_not contain_class('nova::network') }
-
-    end
-
-    context 'when nova network' do
-
-
-      context 'when multi-host is not set' do
-        let :params do
-          default_params.merge(:quantum => false, :multi_host => false)
-        end
-        it {should contain_class('nova::network').with(
-          :private_interface => 'eth0',
-          :public_interface  => 'eth1',
-          :fixed_range       => '10.0.0.0/24',
-          :floating_range    => false,
-          :network_manager   => 'nova.network.manager.FlatDHCPManager',
-          :config_overrides  => {},
-          :create_networks   => true,
-          :num_networks      => 1,
-          :enabled           => true,
-          :install_service   => true
-        )}
-      end
-
-      context 'when multi-host is set' do
-        let :params do
-          default_params.merge(:quantum => false, :multi_host => true)
-        end
-        it { should contain_nova_config('multi_host').with(:value => 'True')}
-        it {should contain_class('nova::network').with(
-          :create_networks   => true,
-          :enabled           => false,
-          :install_service   => false
-        )}
-      end
-
-    end
-  end
 end

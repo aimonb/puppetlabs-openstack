@@ -8,7 +8,8 @@ describe 'openstack::nova_common' do
       :controller             => false,
       :private_interface      => 'eth0',
       :public_address         => '0.0.0.0',
-      :nova_user_password     => 'nova_pass',
+      :internal_address       => '0.0.0.0',
+      :nova_user_password     => 'nova',
       :nova_db_password       => 'nova',
       :db_host                => '127.0.0.1',
       :rabbit_password        => 'rabbit_pw',
@@ -47,7 +48,7 @@ describe 'openstack::nova_common' do
       should contain_class('nova::api').with({
         :enabled            => true,
         :admin_user         => 'nova',
-        :admin_password     => 'nova_pass',
+        :admin_password     => 'nova',
         :auth_host          => '127.0.0.1',
         :enabled_apis       => 'ec2,osapi_compute,metadata',
         :volume_api_class   => 'nova.volume.cinder.API',
@@ -73,7 +74,7 @@ describe 'openstack::nova_common' do
         :private_interface   => 'eth1',
         :internal_address    => '127.0.0.1',
         :public_interface    => 'eth2',
-        :nova_user_password  => 'nova_pass',
+        :nova_user_password  => 'nova',
         :rabbit_host         => 'my_host',
         :rabbit_password     => 'my_rabbit_pw',
         :rabbit_virtual_host => '/foo',
@@ -101,7 +102,7 @@ describe 'openstack::nova_common' do
       should contain_class('nova::api').with({
         :enabled            => true,
         :admin_user         => 'nova',
-        :admin_password     => 'nova_pass',
+        :admin_password     => 'nova',
         :auth_host          => '127.0.0.1',
         :enabled_apis       => 'ec2,osapi_compute,metadata',
         :volume_api_class   => 'nova.volume.cinder.API',
@@ -116,7 +117,13 @@ describe 'openstack::nova_common' do
       })
     end
   end
-
+  
+  context 'when auto assign floating ip is assigned' do
+    let :params do
+      default_params.merge(:auto_assign_floating_ip => 'true')
+    end
+    it { should contain_nova_config('auto_assign_floating_ip').with(:value => 'True')}
+  end
   describe 'when quantum is false' do
     describe 'when overriding network params and multi_host is true, controller is true and compute is true' do
       let :params do
@@ -257,6 +264,8 @@ describe 'openstack::nova_common' do
       expect { should raise_error(Puppet::Error) }
     }
   end
+  
+  # Database
   context 'database' do
 
     context 'with unsupported db type' do
@@ -270,14 +279,15 @@ describe 'openstack::nova_common' do
       end
 
     end
-    context 'with default mysql params' do
+    context 'with default mysql params and controller is true' do
 
       let :params do
         default_params.merge(
-          :enabled => true,
-          :db_type => 'mysql',
-          :quantum => true,
-          :cinder  => true
+          :enabled    => true,
+          :db_type    => 'mysql',
+          :quantum    => true,
+          :cinder     => true,
+          :controller => true
         )
       end
 
@@ -303,7 +313,7 @@ describe 'openstack::nova_common' do
          )
          should contain_class('nova::db::mysql').with(
            :user          => 'nova',
-           :password      => 'nova_pass',
+           :password      => 'nova',
            :dbname        => 'nova',
            :allowed_hosts => '%'
          )
@@ -322,38 +332,61 @@ describe 'openstack::nova_common' do
       end
 
 
-      it { should contain_class('mysql::server::account_security')}
+      #it { should contain_class('mysql::server::account_security')}
 
     end
-    context 'when cinder and quantum are false' do
+
+    context 'when controller is true and quantum is false' do
+      let :params do
+        default_params.merge(
+          :quantum => true,
+          :controller => true
+        )
+      end
+
+      it { should_not contain_class('nova::network') }
+    end
+
+    context 'when controller is true and cinder and quantum are false' do
 
       let :params do
         default_params.merge(
-          :quantum => false,
-          :cinder  => false
+          :quantum    => false,
+          :cinder     => false,
+          :controller => true
         )
       end
       it do
-        should contain_class('nova::volume')
+         should contain_class('keystone::db::mysql').with(
+           :user          => 'keystone',
+           :password      => 'keystone_pass',
+           :dbname        => 'keystone',
+           :allowed_hosts => '%'
+         )
+         should contain_class('glance::db::mysql').with(
+           :user          => 'glance',
+           :password      => 'glance_pass',
+           :dbname        => 'glance',
+           :allowed_hosts => '%'
+         )
+         should contain_class('nova::db::mysql').with(
+           :user          => 'nova',
+           :password      => 'nova',
+           :dbname        => 'nova',
+           :allowed_hosts => '%'
+         )
         should_not contain_class('quantum::db::mysql')
         should_not contain_class('cinder::db::mysql')
       end
 
     end
 
-    context 'when not enabled' do
+    context 'when not controller' do
 
       let :params do
         default_params.merge(
-          {:enabled => false}
+          {:controller => false}
         )
-      end
-
-      it 'should configure mysql server' do
-        param_value(subject, 'class', 'mysql::server', 'enabled').should be_false
-        config_hash = param_value(subject, 'class', 'mysql::server', 'config_hash')
-        config_hash['bind_address'].should == '0.0.0.0'
-        config_hash['root_password'].should == 'sql_pass'
       end
 
       ['keystone', 'nova', 'glance', 'cinder', 'quantum'].each do |x|
