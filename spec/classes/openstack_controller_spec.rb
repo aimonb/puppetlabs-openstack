@@ -182,5 +182,5 @@ describe 'openstack::controller' do
     end
 
   end
-
 end
+
