@@ -53,10 +53,10 @@ class openstack::nova::controller (
 
   # a bunch of nova services that require no configuration
   class { [
-    'nova::scheduler',
-    'nova::objectstore',
     'nova::cert',
-    'nova::consoleauth'
+    'nova::consoleauth',
+    'nova::objectstore',
+    'nova::scheduler'
   ]:
     enabled => $enabled,
   }
