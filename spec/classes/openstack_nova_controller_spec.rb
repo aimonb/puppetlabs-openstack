@@ -47,7 +47,10 @@ describe 'openstack::nova::controller' do
         should contain_class('nova::consoleauth').with(:enabled => true)
         should contain_class('nova::objectstore').with(:enabled => true)
         should contain_class('nova::scheduler').with(:enabled => true)
-        should contain_class('nova::vncproxy').with(:enabled => true)
+        should contain_class('nova::vncproxy').with(
+          :host     => '0.0.0.0',
+          :enabled  => true
+        )
         should_not contain_class('quantum::server')
       end
     end

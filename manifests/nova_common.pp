@@ -265,7 +265,7 @@ class openstack::nova_common(
       enabled_apis      => $enabled_apis, 
       volume_api_class  => $volume_api_class,
       sync_db           => $controller,
-      require           => Class[$os_db_class]
+      require           => Class['nova']
     }
   } 
   # Networking
@@ -316,7 +316,7 @@ class openstack::nova_common(
       network_size      => $network_size,
       enabled           => $enable_network_service,
       install_service   => $enable_network_service,
-      require           => Class[$os_db_class]
+      require           => Class['nova']
     }
   # Quantum
   } else {
