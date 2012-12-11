@@ -74,7 +74,7 @@ class openstack::compute (
   $verbose                       = 'False',
   $enabled                       = true
 ) {
-  include ::nova
+  
   if $vncserver_listen {
     $vncserver_listen_real = $vncserver_listen
   } else {

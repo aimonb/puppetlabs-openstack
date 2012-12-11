@@ -195,7 +195,7 @@ class openstack::nova_common(
   }
   # Ordering
   if $controller {
-    
+    Class[$os_db_class] -> Class['nova']
     class { $os_db_class:
       mysql_root_password    => $mysql_root_password,
       mysql_bind_address     => $mysql_bind_address,
@@ -247,7 +247,6 @@ class openstack::nova_common(
     rabbit_host         => $rabbit_host,
     rabbit_virtual_host => $rabbit_virtual_host,
     service_down_time   => $service_down_time,
-    require             => Class[$os_db_class]
   } 
   if $cinder {
     $volume_api_class = 'nova.volume.cinder.API'
@@ -265,7 +264,6 @@ class openstack::nova_common(
       enabled_apis      => $enabled_apis, 
       volume_api_class  => $volume_api_class,
       sync_db           => $controller,
-      require           => Class['nova']
     }
   } 
   # Networking
@@ -316,7 +314,6 @@ class openstack::nova_common(
       network_size      => $network_size,
       enabled           => $enable_network_service,
       install_service   => $enable_network_service,
-      require           => Class['nova']
     }
   # Quantum
   } else {

@@ -107,7 +107,7 @@ class openstack::controller (
   $quantum                 = false,
   $enabled                 = true
 ) {
-
+  
   if $internal_address {
     $internal_address_real = $internal_address
   } else {
