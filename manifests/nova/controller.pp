@@ -30,6 +30,7 @@ class openstack::nova::controller (
   $rabbit_virtual_host       = '/',
   # VNC
   $vnc_enabled               = true,
+  $novncproxy_host           = '0.0.0.0',
   # General
   $keystone_host             = '127.0.0.1',
   $verbose                   = 'False',
@@ -63,7 +64,7 @@ class openstack::nova::controller (
 
   if $vnc_enabled {
     class { 'nova::vncproxy':
-      host    => $public_address,
+      host    => $novncproxy_host,
       enabled => $enabled,
     }
   }

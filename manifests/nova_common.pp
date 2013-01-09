@@ -119,7 +119,6 @@ class openstack::nova_common(
   $nova_db_user              = 'nova',
   $nova_db_dbname            = 'nova',
   $rabbit_userid             = 'nova',
-  $db_type                   = 'mysql',
   $image_service             = 'nova.image.glance.GlanceImageService',
   $glance_api_servers        = undef,
   $verbose                   = 'False',
@@ -130,24 +129,24 @@ class openstack::nova_common(
   $enabled_apis              = 'ec2,osapi_compute,metadata',
   $enabled                   = true,
   # Database
-  $db_host                 = '127.0.0.1',
-  $db_type                 = 'mysql',
-  $mysql_root_password     = 'sql_pass',
-  $mysql_bind_address      = '0.0.0.0',
-  $mysql_account_security  = true,
-  $allowed_hosts           = '%',
+  $db_host                   = '127.0.0.1',
+  $db_type                   = 'mysql',
+  $db_root_password          = 'sql_pass',
+  $db_bind_address           = '0.0.0.0',
+  $db_account_security       = true,
+  $allowed_hosts             = '%',
   # Network
-  $public_interface              = undef,
-  $private_interface             = undef,
-  $admin_address           = false,
-  $network_manager         = 'nova.network.manager.FlatDHCPManager',
-  $fixed_range             = '10.0.0.0/24',
-  $floating_range          = false,
-  $create_networks         = true,
-  $num_networks            = 1,
-  $network_size            = 255,
-  $multi_host              = false,
-  $network_config          = {},
+  $public_interface          = undef,
+  $private_interface         = undef,
+  $admin_address             = false,
+  $network_manager           = 'nova.network.manager.FlatDHCPManager',
+  $fixed_range               = '10.0.0.0/24',
+  $floating_range            = false,
+  $create_networks           = true,
+  $num_networks              = 1,
+  $network_size              = 255,
+  $multi_host                = false,
+  $network_config            = {},
   $auto_assign_floating_ip   = false,
   # Quantum
   $quantum                       = false,
@@ -186,8 +185,8 @@ class openstack::nova_common(
     }
     'pgsql': {
       $nova_db = "postgresql://${nova_db_user}:${nova_db_password}@${db_host}/${nova_db_dbname}"
-      $os_db_class='openstack::db::pgsql'
-      $db_class='db::pgsql'
+      $os_db_class='openstack::db::postgresql'
+      $db_class='db::postgresql'
     }
     default: {
       fail("Unsupported db : ${db_type}")
@@ -197,9 +196,9 @@ class openstack::nova_common(
   if $controller {
     Class[$os_db_class] -> Class['nova']
     class { $os_db_class:
-      mysql_root_password    => $mysql_root_password,
-      mysql_bind_address     => $mysql_bind_address,
-      mysql_account_security => $mysql_account_security,
+      db_root_password       => $db_root_password,
+      db_bind_address        => $db_bind_address,
+      db_account_security    => $db_account_security,
       keystone_db_user       => $keystone_db_user,
       keystone_db_password   => $keystone_db_password,
       keystone_db_dbname     => $keystone_db_dbname,

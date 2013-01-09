@@ -33,15 +33,15 @@
 class openstack::db::mysql (
     # Required MySQL
     # passwords
-    $mysql_root_password,
+    $db_root_password,
     $keystone_db_password,
     $glance_db_password,
     $nova_db_password,
     $cinder_db_password,
     $quantum_db_password,
     # MySQL
-    $mysql_bind_address     = '0.0.0.0',
-    $mysql_account_security = true,
+    $db_bind_address     = '0.0.0.0',
+    $db_account_security = true,
     # Keystone
     $keystone_db_user       = 'keystone',
     $keystone_db_dbname     = 'keystone',
@@ -66,14 +66,14 @@ class openstack::db::mysql (
   # Install and configure MySQL Server
   class { 'mysql::server':
     config_hash => {
-      'root_password' => $mysql_root_password,
-      'bind_address'  => $mysql_bind_address,
+      'root_password' => $db_root_password,
+      'bind_address'  => $db_bind_address,
     },
     enabled     => $enabled,
   }
 
   # This removes default users and guest access
-  if $mysql_account_security {
+  if $db_account_security {
     class { 'mysql::server::account_security': }
   }
 
