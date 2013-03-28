@@ -1,5 +1,8 @@
 # The Openstack modules:
 
+[![Unit Test Status](https://secure.travis-ci.org/puppetlabs/puppetlabs-openstack.png?branch=master,folsom,essex)](http://travis-ci.org/puppetlabs/puppetlabs-openstack/branches)
+[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-openstack.png?branch=master)](https://travis-ci.org/puppetlabs/puppetlabs-openstack)
+
 ## Introduction
 
 The Openstack Puppet Modules are a flexible Puppet implementation capable of
@@ -121,7 +124,7 @@ These modules are based on the adminstrative guides for openstack
       `service puppetmaster restart`
 
     * Configure each client to connect to the master and enable pluginsync. This
-      can be done by adding the following lines to /etc/puppet.conf:
+      can be done by adding the following lines to /etc/puppet/puppet.conf:
 
             [agent]
               pluginsync = true
@@ -570,3 +573,4 @@ The process for contributing code is as follows:
     an entire environment from scratch
   * Integrate with PuppetDB to allow service auto-discovery to simplify the
     configuration of service association
+
